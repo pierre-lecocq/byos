@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+# -*- mode: ruby; -*-
+
+# File: Gemfile
+# Time-stamp: <2018-10-04 13:46:54>
+# Copyright (C) 2018 Pierre Lecocq
+# Description:
+
+source 'https://rubygems.org'
+
+gem 'json'
+gem 'memcached'
+gem 'pg'
+gem 'puma'
+gem 'sinatra'
+gem 'sinatra-contrib'

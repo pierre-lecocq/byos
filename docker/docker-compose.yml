@@ -1,0 +1,56 @@
+version: '3'
+services:
+
+  database:
+    image: postgres:10
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    volumes:
+      - ./postgresql:/docker-entrypoint-initdb.d
+    networks:
+      byos-net:
+
+  memcached:
+    image: memcached
+    networks:
+      byos-net:
+
+  webapp:
+    build:
+      context: ./webapp
+    environment:
+      - DB_HOST=database
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - CACHE_HOST=memcached
+      - CACHE_PORT=11211
+    volumes:
+      - ../webapp:/webapp:delegated
+      - ./webapp/puma.rb:/etc/puma/puma.rb
+    working_dir:
+      /webapp
+    depends_on:
+      - database
+      - memcached
+    expose:
+      - "9292" # Puma
+    networks:
+      byos-net:
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/vhosts.d:/etc/nginx/vhosts.d
+    depends_on:
+      - webapp
+    ports:
+      - "8080:8080"
+    networks:
+      byos-net:
+
+networks:
+    byos-net:
