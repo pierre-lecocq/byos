@@ -2,7 +2,7 @@
 # -*- mode: ruby; -*-
 
 # File: index.rb
-# Time-stamp: <2018-10-04 14:31:22>
+# Time-stamp: <2018-10-28 12:17:16>
 # Copyright (C) 2018 Pierre Lecocq
 # Description:
 
@@ -43,10 +43,21 @@ class MyApp < Sinatra::Base
     db_conn.exec(q).to_a
   end
 
+  def respond_with(data)
+    content_type :json
+
+    data[:map] = {
+      '/' => ['GET'],
+      '/articles' => ['GET'],
+      '/articles/:id' => ['GET']
+    }
+
+    data.to_json
+  end
+
   # Home route
   get '/' do
-    content_type :json
-    { route: 'home' }.to_json
+    respond_with route: 'home'
   end
 
   # Articles route
@@ -56,8 +67,7 @@ class MyApp < Sinatra::Base
 
     articles = get_articles limit: 50, offset: ((page - 1) * 50)
 
-    content_type :json
-    { route: 'articles', articles: articles }.to_json
+    respond_with route: 'articles', articles: articles
   end
 
   # Article route
@@ -74,7 +84,6 @@ class MyApp < Sinatra::Base
       cache_conn.set cache_key, article.to_json
     end
 
-    content_type :json
-    { route: 'article', article: article }.to_json
+    respond_with route: 'article', article: article
   end
 end

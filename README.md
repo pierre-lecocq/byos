@@ -46,3 +46,9 @@ curl htt://localhost:8080
 curl htt://localhost:8080/articles
 curl htt://localhost:8080/articles/1
 ```
+
+# Generate trafic
+
+```
+ruby trafic/trafic.rb --help
+```
