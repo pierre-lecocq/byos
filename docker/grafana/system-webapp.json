@@ -385,7 +385,7 @@
       },
       "yaxes": [
         {
-          "format": "short",
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -629,7 +629,7 @@
     ]
   },
   "timezone": "",
-  "title": "System",
+  "title": "System - Webapp",
   "uid": "giV2Bf1mz",
-  "version": 12
+  "version": 1
 }

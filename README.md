@@ -72,5 +72,5 @@ ruby trafic/trafic.rb --help
    - Access: `Browser`
 4. Add new dashboard
    - Navigate to `http://localhost:3000/dashboard/import`
-   - Copy and paste the JSON content from [docker/grafana/System-1540737820549.json](docker/grafana/System-1540737820549.json)
+   - Import the JSON dashboard from [docker/grafana/system-webapp.json](docker/grafana/system-webapp.json)
    - Make sure you select the Prometheus source when importing the JSON
