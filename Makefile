@@ -14,6 +14,8 @@ DOCKER_CMD  = cd $(DOCKER_ROOT) && docker-compose
 
 build:
 	cp $(WEBAPP_ROOT)/Gemfile* $(DOCKER_ROOT)/webapp/
+	mkdir -p storage/grafana-data
+	chmod 777 storage/grafana-data
 	$(DOCKER_CMD) build --pull
 
 start:
@@ -27,7 +29,7 @@ clean: stop
 	$(DOCKER_CMD) rm -f
 
 shell:
-	$(DOCKER_CMD) exec nginx /bin/ash
+	$(DOCKER_CMD) exec webapp /bin/ash
 
 database:
 	$(DOCKER_CMD) exec database psql -U $(DB_USERNAME) $(DB_DATABASE)
