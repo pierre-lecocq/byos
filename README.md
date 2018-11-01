@@ -5,10 +5,11 @@ Web infra playground
 # Features
 
 * A sample **[Ruby](https://www.ruby-lang.org/)** web application based on **[Sinatra](http://sinatrarb.com/)** and served by **[Puma](http://puma.io/)**
-  * Includes a **[node exporter](https://prometheus.io/docs/guides/node-exporter/)** for Prometheus
+  * Includes a **[metrics exporter](https://prometheus.io/docs/guides/node-exporter/)** for Prometheus
 * **[Nginx](https://www.nginx.com/)** serving as reverse proxy on port **8080**
 * **[PostgreSQL](https://www.postgresql.org/)** as database server
 * **[Memcached](https://memcached.org/)** as cache server
+  * Includes a **[metrics exporter](https://github.com/prometheus/memcached_exporter)** for Prometheus
 * **[Prometheus](https://prometheus.io/)** as stats and monitoring tool
 * **[Grafana](https://grafana.com/)** as a visualisation tool for data collected by Prometheus
 
@@ -45,9 +46,9 @@ make start
 # Test
 
 ```
-curl htt://localhost:8080
-curl htt://localhost:8080/articles
-curl htt://localhost:8080/articles/1
+curl http://localhost:8080
+curl http://localhost:8080/articles
+curl http://localhost:8080/articles/1
 ```
 
 # Generate trafic
@@ -70,7 +71,8 @@ ruby trafic/trafic.rb --help
    - Type: `Prometheus`
    - Url: `http://localhost:9090`
    - Access: `Browser`
-4. Add new dashboard
+4. Add dashboards
    - Navigate to `http://localhost:3000/dashboard/import`
-   - Import the JSON dashboard from [docker/grafana/system-webapp.json](docker/grafana/system-webapp.json)
-   - Make sure you select the Prometheus source when importing the JSON
+   - Import the JSON dashboards (select the Prometheus source when importing the JSON):
+     - System Webapp [docker/grafana/system-webapp.json](docker/grafana/system-webapp.json)
+     - Memcached [docker/grafana/memcached.json](docker/grafana/memcached.json)

@@ -13,3 +13,8 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['webapp:9100']
+
+  - job_name: 'node.memcached'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['memcached:9150']

@@ -13,7 +13,11 @@ services:
       byos-net:
 
   memcached:
-    image: memcached
+    build:
+      context: ./memcached
+    expose:
+      - "11211" # Memcached
+      - "9150" # Prometheus memcached exporter
     networks:
       byos-net:
 

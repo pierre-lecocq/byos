@@ -6,7 +6,8 @@ WORKDIR /tmp
 
 RUN wget -q https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz && \
     tar xzf node_exporter-0.16.0.linux-amd64.tar.gz && \
-    mv node_exporter-0.16.0.linux-amd64/node_exporter /usr/local/bin/
+    mv node_exporter-0.16.0.linux-amd64/node_exporter /usr/local/bin/ && \
+    rm -rf node_exporter-0.16.0.linux-amd64*
 
 RUN gem install -N bundler \
     && bundle config --global silence_root_warning 1 \
