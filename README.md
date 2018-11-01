@@ -7,6 +7,7 @@ Web infra playground
 * A sample **[Ruby](https://www.ruby-lang.org/)** web application based on **[Sinatra](http://sinatrarb.com/)** and served by **[Puma](http://puma.io/)**
   * Includes a **[metrics exporter](https://prometheus.io/docs/guides/node-exporter/)** for Prometheus
 * **[Nginx](https://www.nginx.com/)** serving as reverse proxy on port **8080**
+  * Includes a **[metrics exporter](https://github.com/nginxinc/nginx-prometheus-exporter)** for Prometheus
 * **[PostgreSQL](https://www.postgresql.org/)** as database server
   * Includes a **[metrics exporter](https://github.com/wrouesnel/postgres_exporter)** for Prometheus
 * **[Memcached](https://memcached.org/)** as cache server
@@ -79,5 +80,6 @@ ruby trafic/trafic.rb --help
    - Navigate to `http://localhost:3000/dashboard/import`
    - Import the JSON dashboards (select the Prometheus source when importing the JSON):
      - System Webapp [docker/grafana/system-webapp.json](docker/grafana/system-webapp.json)
+     - Nginx [docker/grafana/nginx.json](docker/grafana/nginx.json)
      - Postgres [docker/grafana/postgres.json](docker/grafana/postgres.json)
      - Memcached [docker/grafana/memcached.json](docker/grafana/memcached.json)

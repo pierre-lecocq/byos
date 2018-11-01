@@ -8,10 +8,10 @@ services:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_DATABASE}
-      - DATA_SOURCE_NAME=postgresql://${DB_USERNAME}:${DB_PASSWORD}@localhost:5432/?sslmode=disable # Prometheus postgres exporter DSN
+      - DATA_SOURCE_NAME=postgresql://${DB_USERNAME}:${DB_PASSWORD}@localhost:5432/?sslmode=disable # Prometheus exporter DSN
     expose:
       - "5432" # Postgres
-      - "9187" # Prometheus postgres exporter
+      - "9187" # Prometheus exporter
     volumes:
       - ./postgresql:/docker-entrypoint-initdb.d
     networks:
@@ -22,7 +22,7 @@ services:
       context: ./memcached
     expose:
       - "11211" # Memcached
-      - "9150" # Prometheus memcached exporter
+      - "9150" # Prometheus exporter
     networks:
       byos-net:
 
@@ -46,19 +46,21 @@ services:
       - memcached
     expose:
       - "9292" # Puma
-      - "9100" # Prometheus node exporter
+      - "9100" # Prometheus exporter
     networks:
       byos-net:
 
   nginx:
-    image: nginx:alpine
+    build:
+      context: ./nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/vhosts.d:/etc/nginx/vhosts.d
     depends_on:
       - webapp
     ports:
-      - "8080:8080"
+      - "8080:8080" # Nginx
+      - "9113" # Prometheus exporter
     networks:
       byos-net:
 
