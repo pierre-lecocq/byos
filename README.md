@@ -2,7 +2,7 @@
 
 Web infra playground
 
-# Features
+# Architecture
 
 * A sample **[Ruby](https://www.ruby-lang.org/)** web application based on **[Sinatra](http://sinatrarb.com/)** and served by **[Puma](http://puma.io/)**
   * Includes a **[metrics exporter](https://prometheus.io/docs/guides/node-exporter/)** for Prometheus
@@ -14,6 +14,8 @@ Web infra playground
   * Includes a **[metrics exporter](https://github.com/prometheus/memcached_exporter)** for Prometheus
 * **[Prometheus](https://prometheus.io/)** as stats and monitoring tool
 * **[Grafana](https://grafana.com/)** as a visualisation tool for data collected by Prometheus
+
+![architecture](architecture.png)
 
 # Prerequisites
 
