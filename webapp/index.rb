@@ -2,54 +2,39 @@
 # -*- mode: ruby; -*-
 
 # File: index.rb
-# Time-stamp: <2018-10-28 12:17:16>
+# Time-stamp: <2018-11-01 13:46:13>
 # Copyright (C) 2018 Pierre Lecocq
 # Description:
 
 require 'json'
-require 'memcached'
-require 'pg'
 require 'sinatra/base'
 require 'sinatra/reloader' if ENV['RACK_ENV'] == 'development'
 
+require './model'
+
 class MyApp < Sinatra::Base
-  # Connections attributes
-  attr_reader :db_conn, :cache_conn
+  attr_reader :model
 
   # Configure
   configure do
     set :server, :puma
   end
 
-  # Get DB connection
-  def db_conn
-    @db_conn = PG.connect host: ENV['DB_HOST'], dbname: ENV['DB_DATABASE'], user: ENV['DB_USERNAME'], password: ENV['DB_PASSWORD'] unless @db_conn
-    @db_conn
+  # Get model
+  def model
+    @model = Model.new unless @model
+    @model
   end
 
-  # Get cache connection
-  def cache_conn
-    @cache_conn = Memcached.new "#{ENV['CACHE_HOST']}:#{ENV['CACHE_PORT']}" unless @cache_conn
-    @cache_conn
-  end
-
-  # Get articles from database
-  def get_articles(options = {})
-    q = "SELECT * FROM articles WHERE TRUE"
-    q += " AND article_id = #{options[:id]}" if options.key?(:id)
-    q += " LIMIT #{options[:limit]}" if options.key?(:limit)
-    q += " OFFSET #{options[:offset]}" if options.key?(:offset)
-
-    db_conn.exec(q).to_a
-  end
-
-  def respond_with(data)
+  # Respond with JSON data
+  def respond_with(status_code, data)
+    status status_code
     content_type :json
 
     data[:map] = {
       '/' => ['GET'],
-      '/articles' => ['GET'],
-      '/articles/:id' => ['GET']
+      '/articles' => ['GET', 'POST'],
+      '/articles/:id' => ['GET', 'PUT', 'DELETE']
     }
 
     data.to_json
@@ -57,7 +42,9 @@ class MyApp < Sinatra::Base
 
   # Home route
   get '/' do
-    respond_with route: 'home'
+    respond_with 200, message: 'Hello'
+  rescue Exception => e
+    respond_with 400, error: e.message
   end
 
   # Articles route
@@ -65,9 +52,12 @@ class MyApp < Sinatra::Base
     page = params.key?(:page) ? params[:page].to_i : 1
     raise 'Invalid page' unless page > 0
 
-    articles = get_articles limit: 50, offset: ((page - 1) * 50)
+    articles = model.db_fetch limit: 50, offset: ((page - 1) * 50)
+    model.close
 
-    respond_with route: 'articles', articles: articles
+    respond_with 200, articles: articles
+  rescue Exception => e
+    respond_with 400, error: e.message
   end
 
   # Article route
@@ -77,13 +67,71 @@ class MyApp < Sinatra::Base
 
     cache_key = "article:#{id}"
     begin
-      json_data = cache_conn.get cache_key
-      article = JSON.parse json_data
+      json_data = model.cache_fetch cache_key
+      article = ::JSON.parse json_data
     rescue Memcached::NotFound
-      article = get_articles(id: id).first
-      cache_conn.set cache_key, article.to_json
+      article = model.db_fetch(id: id).first
+      model.cache_create cache_key, article.to_json
+      model.close
     end
 
-    respond_with route: 'article', article: article
+    raise 'Not found' unless article
+
+    respond_with 200, article: article
+  rescue Exception => e
+    respond_with 400, error: e.message
+  end
+
+  # Create article
+  post '/articles' do
+    json_params = JSON.parse(request.body.read)
+
+    raise 'Missing title parameter' unless json_params.key? 'title'
+    raise 'Empty title parameter' if json_params['title'].empty?
+    raise 'Too long title parameter' if json_params['title'].length > 1024
+
+    id = model.db_create json_params['title']
+    model.close
+
+    respond_with 201, message: 'Created', id: id
+  rescue Exception => e
+    respond_with 400, error: e.message
+  end
+
+  # Update article
+  put '/articles/:id' do |id|
+    json_params = JSON.parse(request.body.read)
+
+    raise 'Missing title parameter' unless json_params.key? 'title'
+    raise 'Empty title parameter' if json_params['title'].empty?
+    raise 'Too long title parameter' if json_params['title'].length > 1024
+
+    model.db_update id, json_params['title']
+    model.close
+
+    begin
+      model.cache_delete "article:#{id}"
+    rescue Memcached::NotFound
+      # Don't care
+    end
+
+    respond_with 200, message: 'Updated'
+  rescue Exception => e
+    respond_with 400, error: e.message
+  end
+
+  # Delete article
+  delete '/articles/:id' do |id|
+    model.db_delete id
+
+    begin
+      model.cache_delete "article:#{id}"
+    rescue Memcached::NotFound
+      # Don't care
+    end
+
+    respond_with 200, message: 'Deleted'
+  rescue Exception => e
+    respond_with 400, error: e.message
   end
 end

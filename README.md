@@ -47,9 +47,12 @@ make start
 # Test
 
 ```
-curl http://localhost:8080
-curl http://localhost:8080/articles
-curl http://localhost:8080/articles/1
+curl -s http://localhost:8080 | jq
+curl -s http://localhost:8080/articles | jq
+curl -s http://localhost:8080/articles/1 | jq
+curl -s -X POST -H 'Content-Type: application/json' -d '{"title": "New title"}' localhost:8080/articles | jq
+curl -s -X PUT -H 'Content-Type: application/json' -d '{"title": "Updated title"}' localhost:8080/articles/1 | jq
+curl -s -X DELETE localhost:8080/articles/1 | jq
 ```
 
 # Generate trafic
