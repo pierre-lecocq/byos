@@ -8,6 +8,7 @@ Web infra playground
   * Includes a **[metrics exporter](https://prometheus.io/docs/guides/node-exporter/)** for Prometheus
 * **[Nginx](https://www.nginx.com/)** serving as reverse proxy on port **8080**
 * **[PostgreSQL](https://www.postgresql.org/)** as database server
+  * Includes a **[metrics exporter](https://github.com/wrouesnel/postgres_exporter)** for Prometheus
 * **[Memcached](https://memcached.org/)** as cache server
   * Includes a **[metrics exporter](https://github.com/prometheus/memcached_exporter)** for Prometheus
 * **[Prometheus](https://prometheus.io/)** as stats and monitoring tool
@@ -75,4 +76,5 @@ ruby trafic/trafic.rb --help
    - Navigate to `http://localhost:3000/dashboard/import`
    - Import the JSON dashboards (select the Prometheus source when importing the JSON):
      - System Webapp [docker/grafana/system-webapp.json](docker/grafana/system-webapp.json)
+     - Postgres [docker/grafana/postgres.json](docker/grafana/postgres.json)
      - Memcached [docker/grafana/memcached.json](docker/grafana/memcached.json)

@@ -2,11 +2,16 @@ version: '3'
 services:
 
   database:
-    image: postgres:10
+    build:
+      context: ./postgresql
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_DATABASE}
+      - DATA_SOURCE_NAME=postgresql://${DB_USERNAME}:${DB_PASSWORD}@localhost:5432/?sslmode=disable # Prometheus postgres exporter DSN
+    expose:
+      - "5432" # Postgres
+      - "9187" # Prometheus postgres exporter
     volumes:
       - ./postgresql:/docker-entrypoint-initdb.d
     networks:
